@@ -63,11 +63,16 @@ function githubFor(project, data) {
 // Turn any technical/API error into a clean message a customer can understand.
 function friendlyAiError(e) {
   const m = ((e && e.message) || String(e)).toLowerCase();
-  if (/401|authentication|invalid x-api-key|api key/.test(m)) return 'The AI service isn’t set up correctly yet. Please contact your provider.';
-  // real billing problems (OpenAI reports "no credit" as a 429 with "billing")
-  if (/insufficient_quota|billing|payment|insufficient funds|out of credit|\bcredit\b/.test(m)) return 'The AI account is out of credit (or billing isn’t set up). Please contact your provider to add credit.';
-  // rate limits / free-tier limits (Gemini free tier is "resource exhausted" / quota) → just wait
-  if (/429|rate.?limit|resource.?exhausted|too many|overloaded|529|capacity|quota/.test(m)) return 'The AI is busy or hit its free limit. Please wait a moment and try again.';
+  // 1) free-tier / rate limits → just wait (NOT a money problem)
+  if (/free_tier_limit|free.?tier|resource.?exhausted|rate.?limit|rate_limit|too many requests|overloaded|at capacity/.test(m)) return 'The AI hit its free/rate limit. Please wait about a minute and try again.';
+  // 2) a paid-only model was chosen → needs billing enabled
+  if (/needs_billing/.test(m)) return 'That AI model needs billing enabled. In Settings, use a free model like gemini-2.5-flash — or enable billing.';
+  // 3) bad / missing key
+  if (/bad_key|invalid x-api-key|authentication|\bapi[ _-]?key\b|unauthorized|\b401\b/.test(m)) return 'The AI key isn’t valid. Please re-check it in Settings.';
+  // 4) model not available
+  if (/bad_model|not found|no longer available|not supported for generatecontent/.test(m)) return 'That AI model isn’t available. In Settings, use gemini-2.5-flash (free) or a current model.';
+  // 5) genuinely out of money (OpenAI insufficient_quota carries "billing")
+  if (/insufficient_quota|insufficient funds|out of credit|billing|payment|\bcredit\b/.test(m)) return 'The AI account is out of credit (or billing isn’t set up). Add credit, or switch to Gemini’s free tier in Settings.';
   if (/timeout|timed out|econn|network|socket|fetch failed/.test(m)) return 'Couldn’t reach the AI or your server. Please try again in a moment.';
   if (/host or ssh|connection refused|not linked|folder/.test(m)) return 'Couldn’t reach your project files. Please contact your provider.';
   return 'Something went wrong while working on your request. Please try again — if it keeps happening, contact your provider.';

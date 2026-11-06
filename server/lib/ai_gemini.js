@@ -47,18 +47,39 @@ function toGemini(msgs) {
   return contents;
 }
 
-async function callGemini(apiKey, model, body) {
+async function callGemini(apiKey, model, body, attempt = 0) {
   const res = await fetch(`${BASE}/models/${encodeURIComponent(model)}:generateContent`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
     body: JSON.stringify(body)
   });
   let data = null; try { data = await res.json(); } catch { /* non-json */ }
-  if (!res.ok) {
-    const msg = (data && data.error && data.error.message) || ('HTTP ' + res.status);
-    const e = new Error(msg); e.status = res.status; throw e;
+  if (res.ok) return data;
+
+  const err = (data && data.error) || {};
+  const gstatus = err.status || '';
+  const raw = err.message || ('HTTP ' + res.status);
+
+  // Free-tier RATE limit → wait the suggested delay and retry (up to 2x) so a
+  // normal AI turn doesn't break just because it made a few quick calls.
+  if (res.status === 429 && attempt < 2) {
+    let delayMs = 4000;
+    try {
+      const d = (err.details || []).find(x => x.retryDelay);
+      if (d && d.retryDelay) { const s = parseFloat(d.retryDelay); if (!isNaN(s)) delayMs = Math.min(s * 1000 + 600, 15000); }
+    } catch { /* ignore */ }
+    await new Promise(r => setTimeout(r, delayMs));
+    return callGemini(apiKey, model, body, attempt + 1);
   }
-  return data;
+
+  // Classify with an unambiguous tag so the customer sees the RIGHT message.
+  let tag;
+  if (res.status === 429) tag = 'FREE_TIER_LIMIT: Gemini free-tier limit reached — wait about a minute and try again.';
+  else if (/FAILED_PRECONDITION/i.test(gstatus) || /billing/i.test(raw)) tag = 'NEEDS_BILLING: this Gemini model needs billing enabled on your Google account (gemini-2.5-flash is free).';
+  else if (res.status === 404) tag = 'BAD_MODEL: that Gemini model is not available — use gemini-2.5-flash.';
+  else if ((res.status === 400 || res.status === 401 || res.status === 403) && /api[ _-]?key/i.test(raw + gstatus)) tag = 'BAD_KEY: the Gemini key is not valid.';
+  else tag = raw;
+  const e = new Error(tag); e.status = res.status; throw e;
 }
 
 async function runAgent({ apiKey, model, system, messages, tools, exec, onStep }) {
