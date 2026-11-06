@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CloudForge — Sign in</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="/app.css">
+<style>
+  .auth{min-height:100vh;display:grid;grid-template-columns:1.05fr .95fr}
+  .hero{position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:center;gap:18px;padding:56px 60px;
+    border-right:1px solid var(--line);
+    background:radial-gradient(700px 500px at 20% 10%,rgba(99,102,241,.22),transparent 60%),var(--bg2)}
+  .hero .logo{width:56px;height:56px;border-radius:16px;font-size:23px}
+  .hero h1{font-size:34px;letter-spacing:-.04em;line-height:1.08}
+  .hero p{color:var(--muted);font-size:15.5px;max-width:420px;line-height:1.6}
+  .feat{list-style:none;padding:0;margin:10px 0 0;display:flex;flex-direction:column;gap:12px}
+  .feat li{display:flex;gap:11px;align-items:center;color:var(--txt);font-weight:500;font-size:14px}
+  .feat .k{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;background:rgba(99,102,241,.16);border:1px solid rgba(99,102,241,.3);flex:none}
+  .formside{display:flex;align-items:center;justify-content:center;padding:40px 28px}
+  .box{width:100%;max-width:400px}
+  .box .lead{margin-bottom:20px}
+  .tabs{display:flex;gap:4px;background:var(--panel-2);border:1px solid var(--line);border-radius:13px;padding:5px;margin-bottom:16px}
+  .tab{flex:1;text-align:center;padding:10px;border-radius:9px;cursor:pointer;font-weight:600;color:var(--muted);font-size:13.5px;transition:.15s}
+  .tab:hover{color:var(--txt)}
+  .tab.on{background:var(--raised);color:var(--txt);box-shadow:var(--shadow-sm)}
+  .card{box-shadow:var(--shadow)}
+  .err{color:#ffaebb;font-size:13px;margin-top:11px;min-height:18px}
+  @media(max-width:860px){.auth{grid-template-columns:1fr}.hero{display:none}.formside{padding:32px 20px}}
+</style>
+</head>
+<body>
+<div class="auth">
+  <section class="hero">
+    <div class="logo">CF</div>
+    <h1>Ship customer updates<br>without the back-and-forth.</h1>
+    <p>CloudForge lets your customers describe or point at a change, and an AI developer makes it — you approve, it deploys. You stay in full control.</p>
+    <ul class="feat">
+      <li><span class="k">🎯</span> Point &amp; click the exact spot to change</li>
+      <li><span class="k">🤖</span> An AI developer that edits the real code</li>
+      <li><span class="k">🚀</span> Auto-build &amp; deploy, with one-click rollback</li>
+      <li><span class="k">🔒</span> Private per-customer — nobody sees anyone else</li>
+    </ul>
+  </section>
+
+  <section class="formside">
+    <div class="box">
+      <div class="lead"><div class="title">Welcome back</div><div class="sub">Sign in to your CloudForge workspace.</div></div>
+
+      <div class="tabs">
+        <div class="tab on" data-t="owner" id="tab-owner">Owner</div>
+        <div class="tab" data-t="customer" id="tab-customer">Customer</div>
+      </div>
+
+      <!-- OWNER -->
+      <div class="card" id="panel-owner">
+        <div id="owner-login">
+          <h3 id="owner-title">Owner sign in</h3>
+          <div class="sub" id="owner-sub">Enter your owner password.</div>
+          <label class="f">Password</label>
+          <input id="o-pw" type="password" placeholder="••••••••" autocomplete="current-password">
+          <div id="o-pw2wrap" style="display:none">
+            <label class="f">Confirm password</label>
+            <input id="o-pw2" type="password" placeholder="repeat it">
+          </div>
+          <div style="margin-top:16px"><button class="btn primary" id="o-go" style="width:100%">Sign in</button></div>
+          <div class="err" id="o-err"></div>
+        </div>
+      </div>
+
+      <!-- CUSTOMER -->
+      <div class="card" id="panel-customer" style="display:none">
+        <h3>Customer sign in</h3>
+        <div class="sub">Enter the access key your provider gave you.</div>
+        <label class="f">Access key</label>
+        <input id="c-key" placeholder="CF-XXXX-XXXX-XXXX" class="mono" style="letter-spacing:1px;text-transform:uppercase">
+        <div style="margin-top:16px"><button class="btn primary" id="c-go" style="width:100%">Open my project</button></div>
+        <div class="err" id="c-err"></div>
+      </div>
+
+      <div class="sub" style="text-align:center;margin-top:18px">🔒 Your key only opens your own project. Nothing to install.</div>
+    </div>
+  </section>
+</div>
+
+<script src="/common.js"></script>
+<script>
+let needsSetup = false;
+async function boot() {
+  const s = await api('/api/auth/state');
+  if (s.admin) return location.href = '/admin';
+  if (s.client) return location.href = '/app';
+  needsSetup = s.needsSetup;
+  if (needsSetup) {
+    el('owner-title').textContent = 'Create owner account';
+    el('owner-sub').textContent = 'First run — set the password only you will know.';
+    el('o-pw2wrap').style.display = 'block';
+    el('o-go').textContent = 'Create account';
+  }
+}
+function switchTab(t) {
+  document.querySelectorAll('.tab').forEach(x => x.classList.toggle('on', x.dataset.t === t));
+  el('panel-owner').style.display = t === 'owner' ? '' : 'none';
+  el('panel-customer').style.display = t === 'customer' ? '' : 'none';
+}
+el('tab-owner').onclick = () => switchTab('owner');
+el('tab-customer').onclick = () => switchTab('customer');
+
+el('o-go').onclick = async () => {
+  el('o-err').textContent = '';
+  const pw = el('o-pw').value;
+  try {
+    if (needsSetup) {
+      if (pw !== el('o-pw2').value) throw new Error('Passwords do not match.');
+      await api('/api/auth/setup', { method: 'POST', body: { password: pw } });
+    } else {
+      await api('/api/auth/admin-login', { method: 'POST', body: { password: pw } });
+    }
+    location.href = '/admin';
+  } catch (e) { el('o-err').textContent = e.message; }
+};
+el('o-pw').addEventListener('keydown', e => { if (e.key === 'Enter' && !needsSetup) el('o-go').click(); });
+
+el('c-go').onclick = async () => {
+  el('c-err').textContent = '';
+  try {
+    await api('/api/auth/client-login', { method: 'POST', body: { key: el('c-key').value.trim() } });
+    location.href = '/app';
+  } catch (e) { el('c-err').textContent = e.message; }
+};
+el('c-key').addEventListener('keydown', e => { if (e.key === 'Enter') el('c-go').click(); });
+
+boot().catch(e => toast(e.message, 'bad'));
+</script>
+</body>
+</html>

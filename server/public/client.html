@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CloudForge — My Project</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="/app.css">
+</head>
+<body class="app">
+  <header class="topbar">
+    <div class="tb-left">
+      <div class="logo">CF</div>
+      <div style="min-width:0">
+        <div class="pname" id="proj-name">Loading…</div>
+        <div class="psub" id="proj-sub"></div>
+      </div>
+    </div>
+    <div class="tb-right">
+      <span id="site-dot" class="badge">…</span>
+      <button class="btn sm ghost" id="logout">Sign out</button>
+    </div>
+  </header>
+
+  <div class="appshell">
+    <nav class="sidenav">
+      <div class="navlabel">Make changes</div>
+      <div class="cnav on" data-t="ai"><span class="ic">🤖</span> AI Developer</div>
+      <div class="cnav" data-t="point"><span class="ic">🎯</span> Point &amp; Fix</div>
+      <div class="navlabel">Publish &amp; history</div>
+      <div class="cnav" data-t="deploy"><span class="ic">🚀</span> Deploy</div>
+      <div class="cnav" data-t="backups"><span class="ic">💾</span> Backups</div>
+      <div class="cnav" data-t="activity"><span class="ic">🕘</span> Activity</div>
+    </nav>
+
+    <main class="appmain" id="view"></main>
+  </div>
+
+  <input type="file" id="file-input" accept="image/*" style="display:none">
+  <div id="toasts"></div>
+  <script src="/common.js"></script>
+  <script src="/client.js"></script>
+</body>
+</html>

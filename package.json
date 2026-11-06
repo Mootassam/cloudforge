@@ -1,0 +1,26 @@
+{
+  "name": "cloudforge-admin",
+  "version": "0.2.0",
+  "description": "CloudForge Admin — manage customer projects on your Oracle cloud: monitoring, health, backups/rollback, domains/SSL, Telegram alerts, access codes, AI rules, and deploy to each customer's VPS.",
+  "main": "main.js",
+  "author": "CloudForge",
+  "license": "UNLICENSED",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "server": "node server/index.js",
+    "test": "node --test"
+  },
+  "devDependencies": {
+    "electron": "^33.0.0"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^1.4.0",
+    "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.7",
+    "express": "^4.21.2",
+    "openai": "^4.104.0",
+    "playwright-core": "^1.48.2",
+    "ssh2": "^1.16.0"
+  }
+}

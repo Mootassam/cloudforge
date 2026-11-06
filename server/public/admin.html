@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CloudForge — Owner</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="/app.css">
+<style>
+  /* content-level admin pieces (the app shell lives in app.css) */
+  .top{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:26px;gap:12px;padding-bottom:20px;border-bottom:1px solid var(--line)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(224px,1fr));gap:14px}
+  .stat{padding:20px;position:relative;overflow:hidden}
+  .stat::after{content:"";position:absolute;right:-30px;top:-30px;width:90px;height:90px;border-radius:50%;background:radial-gradient(circle,var(--glow),transparent 70%);opacity:.5}
+  .stat .n{font-size:30px;font-weight:800;margin-top:10px;letter-spacing:-.04em}
+  .ptabs{display:flex;gap:4px;flex-wrap:wrap;margin:20px 0;background:var(--panel-2);padding:5px;border-radius:13px;border:1px solid var(--line);width:fit-content;max-width:100%}
+  .ptab{padding:8px 15px;border-radius:9px;cursor:pointer;color:var(--muted);font-weight:600;font-size:13px;transition:.14s var(--ease);white-space:nowrap}
+  .ptab:hover{color:var(--txt)}
+  .ptab.on{background:var(--raised);color:var(--txt);box-shadow:var(--shadow-sm)}
+  .overlay{position:fixed;inset:0;background:rgba(5,7,12,.64);backdrop-filter:blur(6px);display:flex;justify-content:flex-end;z-index:100;animation:fadeIn .18s var(--ease)}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  .overlay[hidden]{display:none!important}
+  .drawer{width:min(580px,100%);height:100%;background:var(--bg2);border-left:1px solid var(--line-2);padding:28px 30px;overflow:auto;box-shadow:-40px 0 80px -24px rgba(0,0,0,.65);animation:slideIn .26s var(--ease)}
+  @keyframes slideIn{from{transform:translateX(30px);opacity:.5}to{transform:none;opacity:1}}
+  .keybox{font-size:20px;letter-spacing:3px;padding:18px;text-align:center;background:var(--panel-2);border:1px dashed rgba(99,102,241,.5);border-radius:var(--r);color:#ccd8ef;font-family:ui-monospace,Consolas,monospace}
+</style>
+</head>
+<body class="ui">
+  <header class="topbar">
+    <div class="tb-left">
+      <div class="logo">CF</div>
+      <div class="wordmark">CloudForge</div>
+      <span class="pill">Owner</span>
+    </div>
+    <div class="tb-right">
+      <button class="btn sm ghost" id="logout">Sign out</button>
+    </div>
+  </header>
+
+  <div class="appshell">
+    <nav class="sidenav">
+      <div class="navlabel">Overview</div>
+      <div class="nav on" data-r="dashboard"><span class="ic">📊</span> Dashboard</div>
+      <div class="navlabel">Infrastructure</div>
+      <div class="nav" data-r="servers"><span class="ic">🖥️</span> Servers</div>
+      <div class="navlabel">Customers</div>
+      <div class="nav" data-r="projects"><span class="ic">🌐</span> Projects</div>
+      <div class="navspace"></div>
+      <div class="nav" data-r="settings"><span class="ic">⚙️</span> Settings</div>
+    </nav>
+
+    <main class="content" id="view"></main>
+  </div>
+
+  <div class="overlay" id="overlay" hidden><div class="drawer" id="drawer"></div></div>
+  <div id="toasts"></div>
+  <script src="/common.js"></script>
+  <script src="/admin.js"></script>
+</body>
+</html>

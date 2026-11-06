@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'" />
+  <title>CloudForge Admin</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">CF</div>
+        <div class="brand-text">
+          <div class="brand-name">CloudForge</div>
+          <div class="brand-sub">Admin console</div>
+        </div>
+      </div>
+
+      <nav class="nav" id="nav">
+        <button class="nav-item" data-route="dashboard">
+          <span class="nav-ico">▚</span> Dashboard
+        </button>
+        <button class="nav-item" data-route="projects">
+          <span class="nav-ico">▤</span> Projects
+        </button>
+        <button class="nav-item" data-route="rules">
+          <span class="nav-ico">§</span> Global Rules
+        </button>
+        <button class="nav-item" data-route="settings">
+          <span class="nav-ico">⚙</span> Settings
+        </button>
+      </nav>
+
+      <div class="sidebar-foot">
+        <div class="pill-owner">OWNER — full control</div>
+        <div class="ver">v0.1.0</div>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <div class="crumb" id="crumb">Dashboard</div>
+          <h1 class="page-title" id="page-title">Overview</h1>
+        </div>
+        <div class="topbar-actions" id="topbar-actions"></div>
+      </header>
+
+      <section class="view" id="view"><!-- rendered by app.js --></section>
+    </main>
+  </div>
+
+  <!-- Project drawer (add / edit) -->
+  <div class="drawer-overlay" id="drawer-overlay" hidden>
+    <div class="drawer" id="drawer">
+      <div class="drawer-head">
+        <h2 id="drawer-title">New project</h2>
+        <button class="icon-btn" id="drawer-close" title="Close">✕</button>
+      </div>
+      <div class="drawer-body" id="drawer-body"><!-- form injected --></div>
+      <div class="drawer-foot">
+        <button class="btn ghost" id="drawer-cancel">Cancel</button>
+        <button class="btn primary" id="drawer-save">Save project</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toasts -->
+  <div class="toasts" id="toasts"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
